@@ -1,0 +1,59 @@
+version: '2'
+
+services:
+  nginx_http1:
+    image: nginx
+    depends_on:
+    - php7_fpm
+    container_name: 'nginx_http1'
+    restart: always
+    #ports:
+    #- "80:80"
+    environment:
+    - NGINX_HOST=z.com
+    - NGINX_PORT=80
+    volumes:
+    - ./nginx/site.template:/etc/nginx/conf.d/site.template:ro
+    - ./nginx/nginx.template:/etc/nginx/nginx.template:ro
+    - ./nginx/cache:/var/cache/nginx/cache
+    - ./php_code:/php_code:ro
+    command: /bin/bash -c "envsubst '$$NGINX_HOST $$NGINX_PORT' < /etc/nginx/conf.d/site.template > /etc/nginx/conf.d/default.conf && envsubst < /etc/nginx/nginx.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+
+  nginx_https1:
+    image: nginx
+    depends_on:
+    - php7_fpm
+    - nginx_http1
+    container_name: 'nginx_https1'
+    restart: always
+    ports:
+    - "443:443"
+    environment:
+    - NGINX_HOST=z.com
+    - NGINX_PORT=443
+    volumes:
+    - ./nginx/site_https.template:/etc/nginx/conf.d/site_https.template:ro
+    - ./nginx/nginx.template:/etc/nginx/nginx.template:ro
+    - ./nginx/certs:/etc/nginx/certs:ro
+    command: /bin/bash -c "envsubst '$$NGINX_HOST $$NGINX_PORT' < /etc/nginx/conf.d/site_https.template > /etc/nginx/conf.d/default.conf && envsubst < /etc/nginx/nginx.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+
+  php7_fpm:
+    image: php:7-fpm
+    container_name: 'php7_fpm'
+    restart: always
+    #ports:
+    #- "9000:9000"
+    volumes:
+    - ./php_code:/php_code:ro
+
+  maria1:
+    image: 'mariadb'
+    container_name: 'maria1'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: qwerty
+      MYSQL_DATABASE: db1
+    volumes:
+    - './db/maria1:/var/lib/mysql'
+    - './cnf/maria1/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro'
+
