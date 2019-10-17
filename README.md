@@ -8,6 +8,7 @@ docker && docker-compose
 0. run nginx_cert_selfsign.sh for generate ssl certificate for nginx container.
 0. run docker-compose up -d 
 0. run install_pdo_mysqli.sh for compile pdo-mysqli ext in php7_fpm container.
+0. run docker-compose restart
 
-##if u use centos 7 with selinux, use this:
+##if u use centos 7 with selinux, possible u need use this:
 chcon -Rt svirt_sandbox_file_t /path_to_folders_db
