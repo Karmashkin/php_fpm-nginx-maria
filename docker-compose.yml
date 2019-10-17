@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 services:
   nginx_http1:
@@ -47,12 +47,14 @@ services:
     - ./php_code:/php_code:ro
 
   maria1:
-    image: 'mariadb'
+    image: 'mariadb:10.1'
     container_name: 'maria1'
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: qwerty
       MYSQL_DATABASE: db1
+      MYSQL_USER: user
+      MYSQL_PASSWORD: qwerty
     volumes:
     - './db/maria1:/var/lib/mysql'
     - './cnf/maria1/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro'
